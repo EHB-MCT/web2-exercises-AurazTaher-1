@@ -15,6 +15,6 @@ function addMarker(){
       lat: 50.88834214278629,
       lng: 4.7300273687570416
     },
-    map: map
+    map: google_map
   })
 }
