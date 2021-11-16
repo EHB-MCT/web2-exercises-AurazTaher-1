@@ -1,0 +1,138 @@
+#venues{
+    padding: 1vw;
+    display: flex;
+    gap: 1vh;
+    flex-direction: column;
+    max-height: 65vh;
+    overflow-y: scroll;
+    min-width: 25vw;
+}
+
+.venue{
+    border: 1px solid #000;
+    border-radius: 20px;
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-width: 20vw;
+}
+
+.venue-marker{
+    border: none;
+    outline: none;
+    background-color: transparent;
+}
+
+.venue-adress > p {
+    margin: 0;
+    padding: 0;
+}
+
+.marker-icon{
+    color: #e05037;
+}
+
+.marker-icon:hover{
+    color: #af412d;
+    cursor: pointer;
+}
+
+
+#header{
+    width: 85%;
+    margin: 0 auto;
+}
+
+#content{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 85%;
+    margin: 0 auto;
+    gap: 5vw;
+}
+
+#main{
+    flex-basis: 40%;
+    padding: 10px;
+}
+
+body{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#form{
+    margin-top: 10vh;
+    display: flex;
+    flex-direction: column;
+    gap: 5vh;
+}
+
+.form-input{
+    border: none;
+    border-bottom: 1px solid #222;
+    width: 100%;
+}
+
+.form-input:focus{
+    outline: none;
+}
+
+.form-button{
+    padding: 0 20px;
+    border-radius: 20px;
+    border: 1px solid #000;
+    background-color: #fff;
+}
+
+.form-button:hover{
+    background-color: #000;
+    color: #fff;
+    transition: 350ms ;
+}
+
+.autocomplete{
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+#autocomplete-items{
+    position: absolute;
+    top: 100%;
+    width: 100%;
+}
+
+.autocomplete-item{
+    background-color: #eee;
+    width: 100%;
+}
+
+.autocomplete-item:hover{
+    cursor: pointer;
+    background-color: #ddd;
+}
+
+footer > p{
+    padding: 0;
+    margin: 0;
+}
+
+footer{
+    max-height: 10vh;
+    padding: 20px;
+    background-color: #888;
+}
+
+#map{
+    height: 70vh;
+    width: 70vh;
+    border: 1px solid #000;
+    border-radius: 50%;
+}
