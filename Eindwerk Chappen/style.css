@@ -1,10 +1,9 @@
-#venues{
+#venue{
     padding: 1vw;
     display: flex;
     gap: 1vh;
     flex-direction: column;
     max-height: 65vh;
-    overflow-y: scroll;
     min-width: 25vw;
 }
 
@@ -18,10 +17,25 @@
     min-width: 20vw;
 }
 
+.venue-info{
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
+}
+
 .venue-marker{
     border: none;
     outline: none;
     background-color: transparent;
+}
+
+.venue-adress{
+    display: flex;
+    gap: 1vw;
+    align-items: center;
+}
+.fa-map-marker-alt{
+    color: #d13030;
 }
 
 .venue-adress > p {
@@ -29,15 +43,11 @@
     padding: 0;
 }
 
-.marker-icon{
-    color: #e05037;
+.venue-hours, .venue-timetable{
+    display: flex;
+    gap: 1vw;
+    justify-content: space-between;
 }
-
-.marker-icon:hover{
-    color: #af412d;
-    cursor: pointer;
-}
-
 
 #header{
     width: 85%;

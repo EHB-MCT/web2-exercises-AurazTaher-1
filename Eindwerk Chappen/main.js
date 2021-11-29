@@ -5,10 +5,8 @@ const radiusInput = document.getElementById("radius-input")
 zoekButton.onclick = findRestaurants
 
 async function findRestaurants(){
-    console.log(google_map)
     if (categoryID != -1){
         let radius = parseInt(radiusInput.value)
-        console.log(radius)
         let options = {
             lat: google_map.center.lat(),
             long: google_map.center.lng(),
@@ -21,7 +19,8 @@ async function findRestaurants(){
             console.log("Error request, or no venues")
         }
         for (var venue of result.response.venues){
-            addTohtml(venue);
+            addMarker(venue, markerClickCallback)
+            // addTohtml(venue);
         }
     }
     else{
@@ -37,45 +36,94 @@ async function sendRequest(options){
     return result;
 }
 
+async function markerClickCallback(venue){
+    let response = await fetch(`https://api.foursquare.com/v2/venues/${venue.id}/hours?client_id=${clientId}&client_secret=${clientSecret}&v=20211012`)
+    let hours = await response.json()
+    createVenue(venue,hours.response.hours)
+}
+
 function addTohtml(venue){
     createVenue(venue)
 }
 
-function createVenue(venue){
+function createVenue(venue,hours){
+    console.log(venue)
+    console.log(hours)
     let venueContainer = document.createElement("div")
-    let generalInfo = createVenueInfo(venue)
-    let marker = document.createElement("i")
-    marker.classList = "marker-icon fas fa-map-marker-alt fa-2x"
+    let generalInfo = createVenueInfo(venue,hours)
     venueContainer.appendChild(generalInfo)
-    venueContainer.appendChild(marker)
     venueContainer.classList.add("venue")
-    let venues = document.getElementById("venues")
+    let venues = document.getElementById("venue")
+    venues.innerHTML = ""
     venues.appendChild(venueContainer)
 }
 
-function createVenueInfo(venue){
+function createVenueInfo(venue, hours){
     let generalInfo = document.createElement("div")
-    let name = document.createElement("h3")
+    let name = document.createElement("h2")
     name.innerText = venue.name
     let adress = createVenueAdress(venue)
+    let timeTable = createVenueTimeTable(hours)
     generalInfo.appendChild(name)
     generalInfo.appendChild(adress)
+    generalInfo.appendChild(timeTable)
     generalInfo.classList.add("venue-info")
     return generalInfo
 }
 
 function createVenueAdress(venue){
-    let address = document.createElement("div")
-    let street = document.createElement("p")
-    let city = document.createElement("p")
-    let country = document.createElement("p")
-    street.innerText = venue.location.address
-    city.innerText = venue.location.city
-    country.innerText = venue.location.country
-    address.appendChild(street)
-    address.appendChild(city)
-    address.appendChild(country)
-    address.classList.add("venue-adress")
-    return address;
+    let container = document.createElement("div")
+    let address = document.createElement("p")
+    address.innerText = `${venue.location.address}, ${venue.location.city}`
+    // add icon
+    let icon = document.createElement("i")
+    icon.classList = "fas fa-map-marker-alt fa-2x"
+    container.appendChild(icon)
+    container.appendChild(address)
+    container.classList.add("venue-adress")
+    return container;
+}
 
+function createVenueTimeTable(timeTable){
+    let days = ["Maandag","Dinsdag","Woensdag","Donderdag","Vrijdag","Zaterdag","Zondag"]
+    if (timeTable.timeframes == undefined){
+        let response = document.createElement("div")
+        let text = document.createElement("p")
+        text.innerText = "No data available"
+        response.appendChild(text)
+        return response
+    }else{
+        let container = document.createElement("div")
+        let icon = document.createElement("i")
+        icon.classList = "far fa-clock fa-2x"
+        let hours = document.createElement("div")
+        for (let timeframe of timeTable.timeframes){
+            for (let day of timeframe.days){
+                let dayHtml = createDay(days[day - 1], timeframe.open)
+                dayHtml.classList.add("venue-hours")
+                hours.appendChild(dayHtml)
+            }
+        }
+        container.appendChild(icon)
+        container.appendChild(hours)
+        container.classList.add("venue-timetable")
+        return container
+    }
+}
+
+function createDay(dayName, timeFrames){
+    let container = document.createElement("div")
+    let dayNameHtml = document.createElement("p")
+    dayNameHtml.innerText = `${dayName}`
+    let timeFramesHtml = document.createElement("p")
+    timeFrames = timeFrames.map(e => `${formatTime(e.start)} - ${formatTime(e.end)}`)
+    timeFramesHtml.innerText = timeFrames.join(" / ")
+    container.appendChild(dayNameHtml)
+    container.appendChild(timeFramesHtml)
+    return container
+}
+
+function formatTime(time){
+    if (time[0] == "+") time = time.substr(1)
+    return `${time.substr(0,2)}:${time.substr(2,2)}`
 }
