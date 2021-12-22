@@ -17,6 +17,15 @@
     min-width: 20vw;
 }
 
+.my-list-venue{
+    max-width: 25vw;
+    flex-direction: column;
+}
+#my-list-venues{
+    display: flex;
+    gap: 1vw;
+}
+
 .venue-info{
     display: flex;
     flex-direction: column;

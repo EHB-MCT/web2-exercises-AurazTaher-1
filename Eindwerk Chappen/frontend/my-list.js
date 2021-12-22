@@ -1,67 +1,94 @@
-const clientSecret = "PKQKFU4SM0FSWU2XFGO2A2453BTGMSSUQAR3P0PJ5VAZQGXP"
-const clientId = "WBWCTH4BRWR3POXCCOOK4IFF5H0030MDRUMNPJIN3EXCWM4N"
-const zoekButton = document.getElementById("zoek-btn")
-const radiusInput = document.getElementById("radius-input")
-zoekButton.onclick = findRestaurants
+window.onload = setup
 
-async function findRestaurants(){
-    if (categoryID != -1){
-        let radius = parseInt(radiusInput.value)
-        let options = {
-            lat: google_map.center.lat(),
-            long: google_map.center.lng(),
-            categoryId: `${categoryID}`,
-            radius: radius
-        }
-        let result = await sendRequest(options);
-        console.log(result)
-        if (result.response.venues == undefined || result.response.venues.length == 0){
-            console.log("Error request, or no venues")
-        }
-        for (var venue of result.response.venues){
-            addMarker(venue, markerClickCallback)
-            // addTohtml(venue);
-        }
-    }
-    else{
-        console.log("Select a category first")
+async function setup(){
+    let venues = await sendApiRequest("http://localhost:3000/api/venues","GET")
+    createVenues(venues)
+}
+
+async function sendApiRequest(url,method,body){
+    let response = await fetch(url,{
+        method: method,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+    })
+    let result = await response.json()
+    return result
+}
+
+function createVenues(venues){
+    let venuesHtml = document.getElementById("my-list-venues")
+    venuesHtml.innerHTML = ""
+    for (let venue of venues){
+        console.log(venue)
+        venuesHtml.appendChild(createVenue(venue.venue, venue.hours,venue._id))
     }
 }
 
-// https://api.foursquare.com/v2/venues/search?ll=50.84883093470575,4.350540392775344&radius=250&categoryId=52e81612bcbc57f1066b79ff&client_id=&client_secret=&v=20211012
-
-async function sendRequest(options){
-    let response = await fetch(`https://api.foursquare.com/v2/venues/search?ll=${options.lat},${options.long}&radius=${options.radius}&categoryId=${options.categoryId}&client_id=${clientId}&client_secret=${clientSecret}&v=20211012`)
-    let result = await response.json();
-    return result;
-}
-
-async function markerClickCallback(venue){
-    let response = await fetch(`https://api.foursquare.com/v2/venues/${venue.id}/hours?client_id=${clientId}&client_secret=${clientSecret}&v=20211012`)
-    let hours = await response.json()
-    createVenue(venue,hours.response.hours)
-}
-
-function addTohtml(venue){
-    createVenue(venue)
-}
-
-function createVenue(venue,hours){
+function createVenue(venue,hours,id){
     console.log(venue)
     console.log(hours)
     let venueContainer = document.createElement("div")
+    let rating = createRating(venue,id)
     let generalInfo = createVenueInfo(venue,hours)
+    let buttons = document.createElement("div")
+    let updateButton = createUpdateButton(id,venue)
+    let removeButton = createRemoveButton(id)
+    buttons.appendChild(updateButton)
+    buttons.appendChild(removeButton)
     venueContainer.appendChild(generalInfo)
-    venueContainer.classList.add("venue")
-    let venues = document.getElementById("venue")
-    venues.innerHTML = ""
-    venues.appendChild(venueContainer)
+    venueContainer.appendChild(rating)
+    venueContainer.appendChild(buttons)
+    venueContainer.classList ="venue my-list-venue"
+    return venueContainer
+}
+
+function createRating(venue,id){
+    let rating = document.createElement("input")
+    rating.type = "number"
+    rating.id = `rating-value-${id}`
+    rating.classList = "form-input"
+    let ratingValue = venue.my_rating
+    rating.value = ratingValue
+    return rating 
+}
+
+function createRemoveButton(id){
+    let button = document.createElement("button")
+    button.innerText = "verwijder"
+    button.onclick = async () =>{
+        await sendApiRequest(`http://localhost:3000/api/venues/${id}`,"DELETE")
+        await setup()
+    }
+    return button
+}
+
+function createUpdateButton(id,venue,hours){
+    let button = document.createElement("button")
+    button.innerText = "update"
+    button.onclick = async () => {
+        let rating = document.getElementById(`rating-value-${id}`).value
+        rating = parseInt(rating)
+        console.log(rating)
+        if (rating < 0){
+            rating = 0
+        }else if (rating > 10){
+            rating = 10
+        }
+        venue.my_rating = rating
+        await sendApiRequest(`http://localhost:3000/api/venues/${id}`,"PUT",{venue: venue, hours:hours})
+        await setup()
+    }
+    return button
 }
 
 function createVenueInfo(venue, hours){
+    console.log(venue)
+    console.log(hours)
     let generalInfo = document.createElement("div")
     let name = document.createElement("h2")
-    name.innerText = venue.name
+    name.innerText = `${venue.name}\t${venue.my_rating}/10`
     let adress = createVenueAdress(venue)
     let timeTable = createVenueTimeTable(hours)
     generalInfo.appendChild(name)
