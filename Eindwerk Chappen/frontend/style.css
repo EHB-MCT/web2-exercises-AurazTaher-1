@@ -7,6 +7,10 @@
     min-width: 25vw;
 }
 
+.fa-plus-circle:hover{
+    cursor: pointer;
+}
+
 .venue{
     border: 1px solid #000;
     border-radius: 20px;
@@ -15,14 +19,21 @@
     justify-content: space-between;
     align-items: center;
     min-width: 20vw;
+    padding: 1vw;
 }
 
+#my-list{
+    width: 85%;
+    margin: 0 auto;
+
+}
 .my-list-venue{
     max-width: 25vw;
     flex-direction: column;
 }
 #my-list-venues{
     display: flex;
+    flex-wrap: wrap;
     gap: 1vw;
 }
 
@@ -82,7 +93,7 @@ body{
     height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
 }
 
 #form{
@@ -96,6 +107,7 @@ body{
     border: none;
     border-bottom: 1px solid #222;
     width: 100%;
+    margin: 1vh 0;
 }
 
 .form-input:focus{

@@ -29,6 +29,7 @@ app.get("/api/venues/:id", async (req,res)=>{
 
 app.post("/api/venues",async (req,res)=>{
     let venue = req.body
+    
     let insertedVenue = await db.insertVenue(venue)
     res.send(insertedVenue)
 })

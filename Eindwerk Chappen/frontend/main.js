@@ -2,6 +2,7 @@ const clientSecret = "PKQKFU4SM0FSWU2XFGO2A2453BTGMSSUQAR3P0PJ5VAZQGXP"
 const clientId = "WBWCTH4BRWR3POXCCOOK4IFF5H0030MDRUMNPJIN3EXCWM4N"
 const zoekButton = document.getElementById("zoek-btn")
 const radiusInput = document.getElementById("radius-input")
+const favoriet = document.getElementById("favorieten").onclick = () => { window.location.href = "myList.html" }
 zoekButton.onclick = findRestaurants
 
 async function findRestaurants(){
@@ -58,6 +59,10 @@ function addTohtml(venue){
     createVenue(venue)
 }
 
+function removeVenue(){
+    document.getElementById("venue").innerHTML = ""
+}
+
 function createVenue(venue,hours){
     console.log(venue)
     console.log(hours)
@@ -100,13 +105,15 @@ function createRating(){
 }
 
 function createMyListButton(venue, hours){
-    let addToMyList = document.createElement("button")
+    let addToMyList = document.createElement("i")
     addToMyList.classList = "fas fa-plus-circle"
     addToMyList.onclick = function(){
         let rating = document.getElementById("rating-input").value
         rating = parseInt(rating)
         venue.my_rating = rating >= 0 ? rating : 0
+        venue.my_rating = rating > 10 ? 10 : rating
         sendApiRequest("http://localhost:3000/api/venues","POST",{venue: venue, hours: hours})
+        removeVenue()
     }
     return addToMyList
 }

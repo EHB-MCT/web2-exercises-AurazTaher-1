@@ -56,6 +56,7 @@ function createRating(venue,id){
 
 function createRemoveButton(id){
     let button = document.createElement("button")
+    button.classList.add("form-button")
     button.innerText = "verwijder"
     button.onclick = async () =>{
         await sendApiRequest(`http://localhost:3000/api/venues/${id}`,"DELETE")
@@ -66,6 +67,7 @@ function createRemoveButton(id){
 
 function createUpdateButton(id,venue,hours){
     let button = document.createElement("button")
+    button.classList.add("form-button")
     button.innerText = "update"
     button.onclick = async () => {
         let rating = document.getElementById(`rating-value-${id}`).value
